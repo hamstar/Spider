@@ -19,6 +19,17 @@ class Spider {
 		$this->d = new DOMDocument;
 		$this->c = new Curl;
 	}
+	
+	function __destruct() {
+		$this->reset();
+	}
+	
+	function reset() {
+		$this->d->loadHTML('<html></html>');
+		$this->body = null;
+		$this->head = null;
+		$this->__construct();
+	}
 
 	/**
 	* Does a curl request using the curl library
