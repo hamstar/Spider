@@ -11,8 +11,8 @@ class Spider {
 
 	protected $d;
 	protected $c;
-	public $body;
-	public $head;
+	protected $body;
+	protected $head;
 	protected $returnCustomDOMNodeList = true;
 
 	function __construct() {
@@ -169,6 +169,15 @@ class Spider {
 		} else {
 			return $this->head[$param];
 		}
+	}
+	
+	/**
+	* Returns the raw HTML from the last request
+	*
+	* @return string
+	*/
+	function getBody() {
+		return $this->body;
 	}
 	
 	/**
