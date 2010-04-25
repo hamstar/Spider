@@ -255,6 +255,35 @@ class Spider {
 		$this->returnCustomDOMNodeList = $b;
 	}
 	
+	/**
+	* Apply a template to a page.  Allows you to run a template class
+	* against a URL/HTML and recieve the formatted results in a class
+	*
+	* @param object $template The template class
+	* @param mixed $url URL to get or array to POST
+	*
+	* @return object
+	*/
+	function applyTemplate( $template, $url=null ) {
+	
+		// Check if we need to post or get
+		if ( is_array( $url ) ) { $this->post( $url[0], $url[1] ); }
+		elseif ( !is_null( $url ) ) { $this->get( $url ); }
+		
+		// init our object to return
+		$o = new StdClass;
+		
+		// Run through all the class variables
+		foreach ( get_class_vars( $template ) as $var => $patt ) {
+			// Process the pattern into the object with the same var name
+			$o->$var = $this->qf( $patt )->inner;
+		}
+		
+		// Give it back to the template to process any vars
+		return $template->process( $o );
+	
+	}
+	
 }
 
 ?>
