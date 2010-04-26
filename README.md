@@ -103,6 +103,29 @@ You can also access the original DOMNode like so
 
 You can choose not to use the custom wrappers by setting the config option for it.
 
+## The Templated Way
+There is also an option to apply a template to a webpage and return an object with the fields you want already extracted and formatted.  So one does not need to make find all the XPaths for a site if someone has made a template.
+	include 'template.IMDB.php';
+	
+	$s = new Spider;
+	$imdb = new IMDBTemplate;
+	
+	//$movie = $s->get( $url )->applyTemplate( $imdb );
+	$movie = $s->applyTemplate( $imdb, $url );
+	
+	print_r( $movie );
+
+This should output something like:
+	stdClass Object
+	(
+		[title] => Daybreakers
+		[year] => 2009
+		[rating] => 6.6/10
+		[votes] => 15000
+	)
+
+This part however has not been tested.
+
 ## Configuration
 These methods should be self explanatory
 	$s->returnCustomDOMNodeList( false ); // use unwrapped DOMNodeLists
@@ -119,3 +142,24 @@ This method can be used to send curl options (case/prefix insensitive)
 	);
 	
 	$s->setCurlOptions( $opts );
+
+## Making your own Template
+You can make your own template by creating a php script with the following format:
+	class SiteTemplate {
+		public $someField = '//xpath/goes/here';
+		//... et al
+		
+		// The apply template function will pass the found fields back
+		// to this function as an object with the same fields as defined above
+		function process( $o ) {
+			$o->someField = strip_tags( $o->someField );
+			//...et al
+			return $o;
+		}
+	}
+
+The Spider class will load the template, extract what it can using the XPaths, put all the fields and values into and object and pass it back to the templates process method.  This allows one to modify the fields from within the template in order to strip tags, white space, extract numbers... anything you can do with a PHP function.
+
+Process then returns the modified object back to the applyTemplate method of the Spider, which gives the object back to where from you called it.
+
+If there are no changes to be made to any fields then the templates process method needs to return the object passed to it.
